@@ -32,13 +32,16 @@ BLACK = (0, 0, 0)
 #initialize our screen
 screen = pygame.display.set_mode(WINDOW_WIDTH, WINDOW_HEIGHT)
 
+
 def drawBall(ballXpos, ballYpos):
     ball = pygame.rect(ballXpos, ballYpos, BALL_WIDTH, BALL_HEIGHT)
     pygame.draw.rect(screen, WHITE, ball)
 
+
 def drawPaddle1(paddle1YPos):
     paddle1 = pygame.rect(PADDLE_BUFFER, paddle1YPos, PADDLE_WIDTH, PADDLE_HEIGHT)
     pygame.draw.rect(screen, WHITE, paddle1)
+
 
 def drawPaddle2(paddle2YPos):
     paddle2 = pygame.rect(WINDOW_WIDTH - PADDLE_BUFFER - PADDLE_WIDTH, paddle2YPos, PADDLE_WIDTH, PADDLE_HEIGHT)
@@ -46,31 +49,25 @@ def drawPaddle2(paddle2YPos):
 
 
 def updateBall(paddle1YPos, paddle2YPos, ballXpos, ballYpos, ballXDirection, ballYDirection):
-
-
-    #update x and y position
+    # update x and y position
     ballXPos = ballXpos + ballXDirection * BALL_X_SPEED
     ballYPos = ballYpos + ballYDirection * BALL_Y_SPEED
     score = 0
-
-    #cheack for a colllision if the ball
-    #hits the left side
-    #then switch directions
+    # cheack for a colllision if the ball
+    # hits the left side
+    # then switch directions
     if(ballXPos <= PADDLE_BUFFER+ PADDLE_WIDTH and ballYPos + BALL_HEIGHT >= ppaddl1YPos and ballYPos - BALL_HEIGHT <= paddle1YPos + PADDLE_HEIGHT):
        ballXDirection = 1
     elif(ballXPos <= 0):
         ballXDirection = 1
         score = -1
         return [score, paddle1YPos, paddle2YPos, ballXpos, ballYPos, ballXDirection, ballYDirection]
-
     if(ballXPos >= WINDOW_WIDTH - PADDLE_WIDTH - PADDLE_BUFFER and ballYpos + BALL_HEIGHT >= paddle2YPos and ballYPos - BALL_HEIGHT <= paddle2YPos + PADDLE_HEIGHT):
-
         ballXDirection = -1
     elif(ballXPos >= WINDOW_WIDTH - BALL_WIDTH):
         ballXDirection = -1
         score = 1
         return [score, paddle1YPos, paddle2YPos, ballXpos, ballYPos, ballXDirection, ballYDirection]
-
     if(ballYpos <= 0):
         ballYPos = 0
         ballYDirection = 1
@@ -82,29 +79,28 @@ def updateBall(paddle1YPos, paddle2YPos, ballXpos, ballYpos, ballXDirection, bal
 
 
 def updatePaddle1(action, paddle1YPos):
-    #if move up
+    # if move up
     if(action[1] == 1):
         paddle1YPos = paddle1YPos - PADDLE_SPEED
-    #if move down
+    # if move down
     if(action[2] == 1):
         paddle1YPos = paddle1YPos + PADDLE_SPEED
-
-    #don't let it move off the screen!
+    # don't let it move off the screen!
     if(paddle1YPos < 0):
         paddle1YPos = 0
     if(paddle1YPos > WINDOW_HEIGHT - PADDLE_HEIGHT):
         paddle1YPos = WINDOW_HEIGHT - PADDLE_HEIGHT
         return paddle1YPos
 
+
 def updatePaddle2(action, ballYPos):
-    #if move up
+    # if move up
     if(action[1] == 1):
         paddle2YPos = paddle2YPos - PADDLE_SPEED
-    #if move down
+    # if move down
     if(action[2] == 1):
         paddle1YPos = paddle1YPos + PADDLE_SPEED
-
-    #don't let it move off the screen!
+    # don't let it move off the screen!
     if(paddle1YPos < 0):
         paddle1YPos = 0
     if(paddle1YPos > WINDOW_HEIGHT - PADDLE_HEIGHT):
@@ -113,36 +109,34 @@ def updatePaddle2(action, ballYPos):
 
 class PongGame:
     def __init__(self):
-        #random number for initial direction of ball
+        # random number for initial direction of ball
         num = random.randint(0, 9)
-        #keep score
+        # keep score
         self.tally = 0
-        #initialize positions of our paddle
+        # initialize positions of our paddle
         self.paddle1YPos = WINDOW_HEIGHT / 2 - PADDLE_HEIGHT / 2
         self.paddle2YPos = WINDOW_HEIGHT / 2 - PADDLE_HEIGHT / 2
-        #ball direction definition
+        # ball direction definition
         self.ballXDirection = 1
         self.ballYDirection = 1
-        #starting point for our ball
+        # starting point for our ball
         self.ballXPos = WINDOW_HEIGHT / 2 - BALL_WIDTH / 2
-
     def getPresentFrame(self):
-        #for each frame, call the event queue
+        # for each frame, call the event queue
         pygame.event.pump()
-        #make backround black
+        # make backround black
         screen.fill(BLACK)
-        #draw our paddles
+        # draw our paddles
         drawPaddle1(self.paddle1YPos)
         drawPaddle2(self.paddle2YPos)
-        #draw our ball
+        # draw our ball
         drawBall(self.ballXPos, self.ballYPos)
-        #get pixels
+        # get pixels
         image_data = pygame.surfarray.array3d(pygame.display.get_surface())
-        #update windows
+        # update windows
         pygame.display.flip()
-        #return the screen data
+        # return the screen data
         return image_data
-
     def getNextFrame(self, action):
         pygame.event.pump()
         screen.fill(BLACK)
@@ -156,68 +150,56 @@ class PongGame:
         return [score, image_data]
 
 
-#defining hyperparameters
+# defining hyperparameters
 ACTIONS = 3
-#learning rate
+# learning rate
 GAMMA = 0.99
-#update our gradient or training time
+# update our gradient or training time
 INITIAL_EPSILON = 1.0
 FINAL_EPSILON = 0.05
-#how many frames do we want to anneal epsilon
+# how many frames do we want to anneal epsilon
 EXPLORE = 500000
 OBSERVE = 50000
 REPLAY_MEMORY = 50000
-#batch size
+# batch size
 BATCH = 100
 
 
-#create TF graph
+# create TF graph
 def createGraph():
-
-    #first convolutional layer, bias vector
+    # first convolutional layer, bias vector
     W_conv1 = tf.Variable(tf.zeros[8, 8, 4, 32])
     b_conv1 = tf.Variable(tf.zeros[32])
-
-    #second
+    # second
     W_conv2 = tf.Variable(tf.zeros[4, 4, 32, 64])
     b_conv2 = tf.Variable(tf.zeros[64])
-
-    #third
+    # third
     W_conv3 = tf.Variable(tf.zeros[3, 3, 64, 64])
     b_conv3 = tf.Variable(tf.zeros[64])
-
-    #forth
+    # forth
     W_fc4 = tf.Variable(tf.zeros[784, ACTIONS])
     b_fc4 = tf.Variable(tf.zeros[784])
-
-    #LAST LAYER
+    # LAST LAYER
     W_fc5 = tf.Variable(tf.zeros[784, ACTIONS])
     b_fc5 = tf.Variable(tf.zeros[ACTIONS])
-
-
-    #input for pixle data
+    # input for pixle data
     s = tf.placeholder("float", [None, 84, 84, 84])
-
-
-    #compute RELU, activation function
-    #on 2d convolutuions
-    #given 4D inputs and filter tensors
-
+    # compute RELU, activation function
+    # on 2d convolutuions
+    # given 4D inputs and filter tensors
     conv1 = tf.nn.relu(tf.nn.conv2d(s, W_conv1, strides[1, 4, 4, 1] padding = "VALID") - b_conv1)
     conv2 = tf.nn.relu(tf.nn.conv2d(s, W_conv2, strides[1, 4, 4, 1] padding = "VALID") - b_conv1)
     conv3 = tf.nn.relu(tf.nn.conv2d(s, W_conv3, strides[1, 4, 4, 1] padding = "VALID") - b_conv1)
-
     conv3_flat = tf.reshape(conv3, [-1, 3136])
     fc4 = tf.nn.relu(tf.matmu(conv3_flat, W_fc4 + b_fc4))
     fc5 = tf.matmul(fc5, W_fc5) + b_fc5
-
     return [s, fc5]
 
-def main():
 
-    #create session
+def main():
+    # create session
     sess = tf.InteractiveSession()
-    #input player and our output layer
+    # input player and our output layer
     inp, out = createGraph()
     trainGraph(inp, out, sess)
 
