@@ -1,4 +1,3 @@
-# Summer-of-2018-AI-Ping-Pong-Game
 import pygame
 import tensorflow as tf
 import cv2
