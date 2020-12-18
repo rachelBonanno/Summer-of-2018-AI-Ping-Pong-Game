@@ -1,3 +1,5 @@
+#! /usr/bin/python
+
 import pygame
 import tensorflow as tf
 import cv2
